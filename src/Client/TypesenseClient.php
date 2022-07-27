@@ -16,7 +16,7 @@ use Typesense\Operations;
 
 class TypesenseClient
 {
-    private $client;
+    private Client $client;
 
     public function __construct(string $url, string $apiKey)
     {

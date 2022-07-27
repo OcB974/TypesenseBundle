@@ -8,11 +8,12 @@ use ACSEO\TypesenseBundle\Manager\CollectionManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Typesense\Exceptions\ObjectNotFound;
 
 class CreateCommand extends Command
 {
     protected static $defaultName = 'typesense:create';
-    private $collectionManager;
+    private CollectionManager $collectionManager;
 
     public function __construct(CollectionManager $collectionManager)
     {
@@ -37,7 +38,7 @@ class CreateCommand extends Command
             try {
                 $output->writeln(sprintf('<info>Deleting</info> <comment>%s</comment>', $name));
                 $this->collectionManager->deleteCollextion($name);
-            } catch (\Typesense\Exceptions\ObjectNotFound $exception) {
+            } catch (ObjectNotFound $exception) {
                 $output->writeln(sprintf('<comment>%s</comment> <info>does not exists</info> ', $name));
             }
 

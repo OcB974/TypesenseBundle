@@ -18,16 +18,16 @@ class ImportCommand extends Command
 {
     protected static $defaultName = 'typesense:import';
 
-    private $em;
-    private $collectionManager;
-    private $documentManager;
-    private $transformer;
+    private EntityManagerInterface $em;
+    private CollectionManager $collectionManager;
+    private DocumentManager $documentManager;
+    private DoctrineToTypesenseTransformer $transformer;
     private const ACTIONS = [
         'create',
         'upsert',
         'update',
     ];
-    private $isError = false;
+    private bool $isError = false;
 
     public function __construct(
         EntityManagerInterface $em,

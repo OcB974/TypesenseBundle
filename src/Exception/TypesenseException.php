@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace ACSEO\TypesenseBundle\Exception;
 
+use RuntimeException;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
-final class TypesenseException extends \RuntimeException
+final class TypesenseException extends RuntimeException
 {
-    public $status;
+    public int $status;
 
     /**
      * @var string

@@ -9,9 +9,9 @@ use ACSEO\TypesenseBundle\Transformer\AbstractTransformer;
 
 class CollectionManager
 {
-    private $collectionDefinitions;
-    private $collectionClient;
-    private $transformer;
+    private array $collectionDefinitions;
+    private CollectionClient $collectionClient;
+    private AbstractTransformer $transformer;
 
     public function __construct(CollectionClient $collectionClient, AbstractTransformer $transformer, array $collectionDefinitions)
     {
@@ -20,12 +20,12 @@ class CollectionManager
         $this->transformer           = $transformer;
     }
 
-    public function getCollectionDefinitions()
+    public function getCollectionDefinitions(): array
     {
         return $this->collectionDefinitions;
     }
 
-    public function getManagedClassNames()
+    public function getManagedClassNames(): array
     {
         $managedClassNames = [];
         foreach ($this->collectionDefinitions as $name => $collectionDefinition) {
@@ -40,20 +40,20 @@ class CollectionManager
         return $this->collectionClient->list();
     }
 
-    public function createAllCollections()
+    public function createAllCollections(): void
     {
         foreach ($this->collectionDefinitions as $name => $collectionDefinition) {
             $this->createCollection($name);
         }
     }
 
-    public function deleteCollextion($collectionDefinitionName)
+    public function deleteCollextion($collectionDefinitionName): void
     {
         $definition = $this->collectionDefinitions[$collectionDefinitionName];
         $this->collectionClient->delete($definition['typesense_name']);
     }
 
-    public function createCollection($collectionDefinitionName)
+    public function createCollection($collectionDefinitionName): void
     {
         $definition       = $this->collectionDefinitions[$collectionDefinitionName];
         $fieldDefinitions = $definition['fields'];

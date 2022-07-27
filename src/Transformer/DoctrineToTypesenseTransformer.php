@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace ACSEO\TypesenseBundle\Transformer;
 
+use DateTime;
 use Doctrine\Common\Util\ClassUtils;
+use Exception;
 use Symfony\Component\PropertyAccess\Exception\RuntimeException;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 class DoctrineToTypesenseTransformer extends AbstractTransformer
 {
-    private $collectionDefinitions;
-    private $entityToCollectionMapping;
-    private $accessor;
+    private array $collectionDefinitions;
+    private array $entityToCollectionMapping;
+    private PropertyAccessorInterface $accessor;
 
     public function __construct(array $collectionDefinitions, PropertyAccessorInterface $accessor)
     {
@@ -30,7 +32,7 @@ class DoctrineToTypesenseTransformer extends AbstractTransformer
         $entityClass = ClassUtils::getClass($entity);
 
         if (!isset($this->entityToCollectionMapping[$entityClass])) {
-            throw new \Exception(sprintf('Class %s is not supported for Doctrine To Typesense Transformation', $entityClass));
+            throw new Exception(sprintf('Class %s is not supported for Doctrine To Typesense Transformation', $entityClass));
         }
 
         $data = [];
@@ -56,7 +58,7 @@ class DoctrineToTypesenseTransformer extends AbstractTransformer
         return $data;
     }
 
-    public function castValue(string $entityClass, string $propertyName, $value)
+    public function castValue(string $entityClass, string $propertyName, $value): mixed
     {
         $collection = $this->entityToCollectionMapping[$entityClass];
         $key        = array_search(
@@ -72,7 +74,7 @@ class DoctrineToTypesenseTransformer extends AbstractTransformer
 
         switch ($originalType.$castedType) {
             case self::TYPE_DATETIME.self::TYPE_INT_64:
-                if ($value instanceof \DateTime) {
+                if ($value instanceof DateTime) {
                     return $value->getTimestamp();
                 }
 

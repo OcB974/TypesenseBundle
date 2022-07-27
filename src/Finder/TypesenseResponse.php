@@ -6,13 +6,13 @@ namespace ACSEO\TypesenseBundle\Finder;
 
 class TypesenseResponse
 {
-    private $facetCounts;
-    private $found;
-    private $hits;
-    private $hydratedHits;
-    private $isHydrated;
-    private $page;
-    private $searchTimeMs;
+    private mixed $facetCounts;
+    private mixed $found;
+    private mixed $hits;
+    private mixed $hydratedHits;
+    private bool $isHydrated;
+    private mixed $page;
+    private mixed $searchTimeMs;
 
     public function __construct(?array $result)
     {

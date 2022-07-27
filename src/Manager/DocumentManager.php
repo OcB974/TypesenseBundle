@@ -8,7 +8,7 @@ use ACSEO\TypesenseBundle\Client\TypesenseClient;
 
 class DocumentManager
 {
-    private $client;
+    private TypesenseClient $client;
 
     public function __construct(TypesenseClient $client)
     {
@@ -33,7 +33,7 @@ class DocumentManager
         return $this->client->collections[$collection]->documents->create($data);
     }
 
-    public function import(string $collection, array $data, string $action = 'create')
+    public function import(string $collection, array $data, string $action = 'create'): array
     {
         if (!$this->client->isOperationnal() || empty($data)) {
             return [];

@@ -9,17 +9,20 @@ use ACSEO\TypesenseBundle\Manager\DocumentManager;
 use ACSEO\TypesenseBundle\Transformer\DoctrineToTypesenseTransformer;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
+use Exception;
 
 class TypesenseIndexer
 {
-    private $collectionManager;
-    private $transformer;
-    private $managedClassNames;
+    private CollectionManager $collectionManager;
+    private DoctrineToTypesenseTransformer $transformer;
+    private DocumentManager $documentManager;
+    private array $managedClassNames;
+    private array $objectsIDsToDelete ;
 
-    private $objetsIdThatCanBeDeletedByObjectHash = [];
-    private $documentsToIndex                     = [];
-    private $documentsToUpdate                    = [];
-    private $documentsToDelete                    = [];
+    private array $objetsIdThatCanBeDeletedByObjectHash = [];
+    private array $documentsToIndex                     = [];
+    private array $documentsToUpdate                    = [];
+    private array $documentsToDelete                    = [];
 
     public function __construct(
         CollectionManager $collectionManager,
@@ -34,7 +37,7 @@ class TypesenseIndexer
         $this->objectsIDsToDelete = [];
     }
 
-    public function postPersist(LifecycleEventArgs $args)
+    public function postPersist(LifecycleEventArgs $args): void
     {
         $entity = $args->getObject();
 
@@ -48,7 +51,7 @@ class TypesenseIndexer
         $this->documentsToIndex[] = [$collection, $data];
     }
 
-    public function postUpdate(LifecycleEventArgs $args)
+    public function postUpdate(LifecycleEventArgs $args): void
     {
         $entity = $args->getObject();
 
@@ -67,7 +70,7 @@ class TypesenseIndexer
         $this->documentsToUpdate[] = [$collection, $data['id'], $data];
     }
 
-    private function checkPrimaryKeyExists($collectionConfig)
+    private function checkPrimaryKeyExists($collectionConfig): void
     {
         foreach ($collectionConfig['fields'] as $config) {
             if ($config['type'] === 'primary') {
@@ -75,10 +78,10 @@ class TypesenseIndexer
             }
         }
 
-        throw new \Exception(sprintf('Primary key info have not been found for Typesense collection %s', $collectionConfig['typesense_name']));
+        throw new Exception(sprintf('Primary key info have not been found for Typesense collection %s', $collectionConfig['typesense_name']));
     }
 
-    public function preRemove(LifecycleEventArgs $args)
+    public function preRemove(LifecycleEventArgs $args): void
     {
         $entity = $args->getObject();
 
@@ -91,7 +94,7 @@ class TypesenseIndexer
         $this->objetsIdThatCanBeDeletedByObjectHash[spl_object_hash($entity)] = $data['id'];
     }
 
-    public function postRemove(LifecycleEventArgs $args)
+    public function postRemove(LifecycleEventArgs $args): void
     {
         $entity = $args->getObject();
 
@@ -106,7 +109,7 @@ class TypesenseIndexer
         $this->documentsToDelete[] = [$collection, $this->objetsIdThatCanBeDeletedByObjectHash[$entityHash]];
     }
 
-    public function postFlush()
+    public function postFlush(): void
     {
         $this->indexDocuments();
         $this->updateDocuments();
@@ -115,14 +118,14 @@ class TypesenseIndexer
         $this->resetDocuments();
     }
 
-    private function indexDocuments()
+    private function indexDocuments(): void
     {
         foreach ($this->documentsToIndex as $documentToIndex) {
             $this->documentManager->index(...$documentToIndex);
         }
     }
 
-    private function updateDocuments()
+    private function updateDocuments(): void
     {
         foreach ($this->documentsToUpdate as $documentToUpdate) {
             $this->documentManager->delete($documentToUpdate[0], $documentToUpdate[1]);
@@ -130,28 +133,28 @@ class TypesenseIndexer
         }
     }
 
-    private function deleteDocuments()
+    private function deleteDocuments(): void
     {
         foreach ($this->documentsToDelete as $documentToDelete) {
             $this->documentManager->delete(...$documentToDelete);
         }
     }
 
-    private function resetDocuments()
+    private function resetDocuments(): void
     {
         $this->documentsToIndex  = [];
         $this->documentsToUpdate = [];
         $this->documentsToDelete = [];
     }
 
-    private function entityIsNotManaged($entity)
+    private function entityIsNotManaged($entity): bool
     {
         $entityClassname = ClassUtils::getClass($entity);
 
         return !in_array($entityClassname, array_values($this->managedClassNames), true);
     }
 
-    private function getCollectionName($entity)
+    private function getCollectionName($entity): bool|int|string
     {
         $entityClassname = ClassUtils::getClass($entity);
 

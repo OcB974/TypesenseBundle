@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ACSEO\TypesenseBundle\DependencyInjection;
 
+use Exception;
+use InvalidArgumentException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -18,14 +20,14 @@ class ACSEOTypesenseExtension extends Extension
      *
      * @var array
      */
-    private $collectionsConfig = [];
+    private array $collectionsConfig = [];
 
     /**
      * An array of finder as configured by the extension.
      *
      * @var array
      */
-    private $findersConfig = [];
+    private array $findersConfig = [];
 
     public function load(array $configs, ContainerBuilder $container)
     {
@@ -78,7 +80,7 @@ class ACSEOTypesenseExtension extends Extension
      * @param array            $collections An array of collection configurations
      * @param ContainerBuilder $container   A ContainerBuilder instance
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException|Exception
      */
     private function loadCollections(array $collections, ContainerBuilder $container)
     {
@@ -89,10 +91,10 @@ class ACSEOTypesenseExtension extends Extension
 
             foreach ($config['fields'] as $key => $fieldConfig) {
                 if (!isset($fieldConfig['name'])) {
-                    throw new \Exception('acseo_typesense.collections.'.$name.'.'.$key.'.name must be set');
+                    throw new Exception('acseo_typesense.collections.'.$name.'.'.$key.'.name must be set');
                 }
                 if (!isset($fieldConfig['type'])) {
-                    throw new \Exception('acseo_typesense.collections.'.$name.'.'.$key.'.type must be set');
+                    throw new Exception('acseo_typesense.collections.'.$name.'.'.$key.'.type must be set');
                 }
 
                 if ($fieldConfig['type'] === 'primary') {
@@ -116,7 +118,7 @@ class ACSEOTypesenseExtension extends Extension
                     $finderConfig['collection_name'] = $collectionName;
                     $finderConfig['finder_name']     = $finderName;
                     if (!isset($finderConfig['finder_parameters']['query_by'])) {
-                        throw new \Exception('acseo_typesense.collections.'.$finderName.'.finder_parameters.query_by must be set');
+                        throw new Exception('acseo_typesense.collections.'.$finderName.'.finder_parameters.query_by must be set');
                     }
                     $this->findersConfig[$finderName] = $finderConfig;
                 }

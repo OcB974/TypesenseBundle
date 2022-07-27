@@ -10,7 +10,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TypesenseAutocompleteController
 {
-    private $routesConfig;
+    private array $routesConfig;
 
     public function __construct(array $routesConfig)
     {

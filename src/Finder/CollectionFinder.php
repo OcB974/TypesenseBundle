@@ -10,9 +10,9 @@ use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
 class CollectionFinder implements CollectionFinderInterface
 {
-    private $collectionConfig;
-    private $collectionClient;
-    private $em;
+    private array $collectionConfig;
+    private CollectionClient $collectionClient;
+    private EntityManagerInterface $em;
 
     public function __construct(CollectionClient $collectionClient, EntityManagerInterface $em, array $collectionConfig)
     {
@@ -21,7 +21,7 @@ class CollectionFinder implements CollectionFinderInterface
         $this->em               = $em;
     }
 
-    public function rawQuery(TypesenseQuery $query)
+    public function rawQuery(TypesenseQuery $query): TypesenseResponse
     {
         return $this->search($query);
     }
@@ -55,14 +55,14 @@ class CollectionFinder implements CollectionFinderInterface
         return $results;
     }
 
-    private function search(TypesenseQuery $query)
+    private function search(TypesenseQuery $query): TypesenseResponse
     {
         $result = $this->collectionClient->search($this->collectionConfig['typesense_name'], $query);
 
         return new TypesenseResponse($result);
     }
 
-    private function getPrimaryKeyInfo()
+    private function getPrimaryKeyInfo(): array
     {
         foreach ($this->collectionConfig['fields'] as $name => $config) {
             if ($config['type'] === 'primary') {

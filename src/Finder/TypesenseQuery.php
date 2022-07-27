@@ -6,7 +6,7 @@ namespace ACSEO\TypesenseBundle\Finder;
 
 class TypesenseQuery
 {
-    private $searchParameters;
+    private array $searchParameters;
 
     public function __construct(string $q = null, string $queryBy = null)
     {
@@ -28,7 +28,7 @@ class TypesenseQuery
 
     public function hasParameter($key): bool
     {
-        return isset($this->searchParameters[$key]) ? true : false;
+        return isset($this->searchParameters[$key]);
     }
 
     /**

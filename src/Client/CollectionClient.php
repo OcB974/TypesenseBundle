@@ -8,7 +8,7 @@ use ACSEO\TypesenseBundle\Finder\TypesenseQuery;
 
 class CollectionClient
 {
-    private $client;
+    private TypesenseClient $client;
 
     public function __construct(TypesenseClient $client)
     {

@@ -6,8 +6,8 @@ namespace ACSEO\TypesenseBundle\Finder;
 
 class SpecificCollectionFinder
 {
-    private $finder;
-    private $arguments;
+    private CollectionFinderInterface $finder;
+    private array $arguments;
 
     public function __construct(CollectionFinderInterface $finder, array $arguments)
     {
